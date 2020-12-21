@@ -22,6 +22,7 @@ def bfs(x,y):
             if 0 <= nx < r and 0 <= ny < c and alpha[nx][ny] not in passed:
                 # 지나간 알파벳인지를 확인하기 위해 지나갈 때마다 이전 거에 지나간 알파벳을 더해줌
                 q.add((nx,ny,passed+alpha[nx][ny]))
+                print(passed)
                 count=max(count,len(passed)+1)
 
 bfs(0,0)

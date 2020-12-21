@@ -14,8 +14,7 @@ dy=[0,0,-1,1]
 def bsf():
     q = deque()
     q.append([0, 0, 1])
-    # visitied[x][y][0]은 벽을 뚫은 이후, 시작지점으로부터의 거리
-    # visitied[x][y][1]이 1이면 벽을 뚫을 수 있는 상태. 0아면 벽을 뚫은 상태. 2이상은 벽을 뚫기 전 시작지점으로부터의 거리
+    # visit[x][y][1]이 0이면 벽을 뚫은 상태. 1이면 벽을 뚫을 수 있는 상태. 2이상은 벽을 뚫기 전 시작지점으로부터의 거리
     visit = [[[0] * 2 for i in range(m)] for i in range(n)]
     visit[0][0][1] = 1
     while q:
