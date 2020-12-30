@@ -27,7 +27,7 @@ for h in range(0,101):
     count=0
     for i in range(n):
         for j in range(n):
-            if area[i][j]>h and visited[i][j]==0:
+            if area[i][j] > h and visited[i][j] == 0:
                 visited[i][j]=1
                 dfs(i,j,h)
                 count+=1
