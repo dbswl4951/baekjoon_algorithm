@@ -6,6 +6,7 @@
 2. 탐색 중 가장 최댓값 출력
 
 BFS까지만 생각하고 BFS에 이분탐색을 접목시키는건 생각 못 함.
+풀이를 보면 간단한데 왜 못 푸는걸까!!
 '''
 import sys
 from collections import deque
