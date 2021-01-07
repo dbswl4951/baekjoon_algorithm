@@ -20,7 +20,7 @@ result=[]
 dpVal=max(dp)
 dpIdx=dp.index(dpVal)
 #수열 구하기
-while dpIdx>=0: #가장 큰 숫자의 인덱스부터 내려가면서 검사사
+while dpIdx>=0: #가장 큰 숫자의 인덱스부터 내려가면서 검사
     if dp[dpIdx]==dpVal:
         result.append(numbers[dpIdx])
         dpVal-=1
