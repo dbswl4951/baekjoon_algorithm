@@ -23,8 +23,6 @@ leftDp,rightDp=[1]*n,[1]*n
 leftDp=getLIS(leftDp)
 numbers.reverse()
 rightDp=getLIS(rightDp)
-#print(leftDp)
-#print(rightDp)
 rightDp.reverse()
 dp = [leftDp[i] + rightDp[i] for i in range(n)]
 print(max(dp) - 1)
