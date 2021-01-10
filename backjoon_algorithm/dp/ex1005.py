@@ -23,7 +23,6 @@ for _ in range(t):
         if inDegree[i]==0:
             q.append(i)
             dp[i]=time[i]   #해당 건물의 건설 시간 넣기
-
     while q:
         x=q.popleft()
         for i in rule[x]:
