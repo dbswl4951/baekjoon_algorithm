@@ -43,9 +43,7 @@ def dijkstra(start):
     q.append(start)
     while q:
         now = q.popleft()
-        #print("now==",now)
         for i in graph[now]:    #인접 노드들 방문
-            #print("i:",i)
             if distance[now][i]!=0:  #이미 들린 노드면 건너 뜀
                 continue
             distance[now][i]=-1

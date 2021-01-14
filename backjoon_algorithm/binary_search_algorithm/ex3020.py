@@ -10,17 +10,17 @@
 import sys
 
 def binary_search(cave,x):  #주어진 list에서 x보다 큰 데이터의 개수를 반환
-    right,left=0,len(cave)-1
-    while right<=left:
-        mid=(right+left)//2
+    start,end=0,len(cave)-1
+    while start<=end:
+        mid=(start+end)//2
         if cave[mid]<=x:
-            right=mid+1
+            start=mid+1
         else:
-            left=mid-1
-    # x이하의 값을 갖는 데이터 중 최댓값의 index: right
-    # x이하의 값을 갖는 데이터의 개수: right + 1 (index는 0부터 시작하므로)
-    # x보다 큰 데이터의 개수: 전체 데이터의 개수 - (right + 1)
-    return len(cave)-(right+1)
+            end=mid-1
+    # x이하의 값을 갖는 데이터 중 최댓값의 index: end
+    # x이하의 값을 갖는 데이터의 개수: end + 1 (index는 0부터 시작하므로)
+    # x보다 큰 데이터의 개수: 전체 데이터의 개수 - (end + 1)
+    return len(cave)-(end+1)
 
 n,h=map(int,sys.stdin.readline().split())
 cave1=[]    #석순 list
@@ -32,6 +32,8 @@ for i in range(n):
         cave2.append((int(sys.stdin.readline().strip())))
 cave1.sort()
 cave2.sort()
+#print("cave1:",cave1)
+#print("cave2:",cave2)
 result1=n   #장애물의 최솟값
 result2=0   #구간 몇 개 있는지
 for i in range(1,h+1):
