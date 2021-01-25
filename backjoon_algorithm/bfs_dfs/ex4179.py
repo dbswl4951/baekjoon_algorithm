@@ -30,7 +30,6 @@ def burn():     #불 확산 시키기
                 maze[nx][ny]='F'
                 fire.append([nx,ny])
         fireLen-=1
-        #print("fire::",maze)
 
 def bfs(x,y):  #지훈이 이동
     global q,danger
@@ -44,7 +43,6 @@ def bfs(x,y):  #지훈이 이동
             for i in range(4):
                 nx,ny = x+dx[i], y+dy[i]
                 if [x,y] not in danger and (nx==-1 or nx==r or ny==-1 or ny==c):
-                    #print("nx,ny::",nx,ny)
                     print(visited[x][y])
                     return
                 if 0<=nx<r and 0<=ny<c and maze[nx][ny]=='.' and visited[nx][ny]==0:
@@ -52,8 +50,6 @@ def bfs(x,y):  #지훈이 이동
                     q.append([nx,ny])
                     maze[nx][ny]='J'
                     maze[x][y]='.'
-                    #print("visited::",visited)
-                #print("지훈:",maze)
             qLen-=1
         burn()
     print("IMPOSSIBLE")

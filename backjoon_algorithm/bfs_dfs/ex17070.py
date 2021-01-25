@@ -7,7 +7,7 @@
 '''
 import sys
 
-def dfs(x,y,r,l):
+def dfs(x,y,r,l):   #다음에 올 수 있는 파이프 r:가로, l:세로
     global result
     if x==n-1 and y==n-1:
         result+=1
