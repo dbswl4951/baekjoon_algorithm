@@ -1,20 +1,26 @@
-# 입력
-N = int(input())
-graph = []
-for _ in range(N):
-    graph.append(list(map(int, input().split())))
+import sys
+from collections import deque
 
-# 플로이드-워셜 알고리즘
-for k in range(N):  # 경로 for문이 가장 상위 단계여야 누락되지 않는다
-    for i in range(N):
-        for j in range(N):
-            print("k,i,j===",k,i,j)
-            if graph[i][j] == 1 or (graph[i][k] == 1 and graph[k][j] == 1):
-                graph[i][j] = 1
-                print(graph)
+if __name__ == '__main__':
+    N, K = map(int, sys.stdin.readline().split())
+    arr = list(map(int, sys.stdin.readline().split()))
 
-# 출력
-for row in graph:
-    for col in row:
-        print(col, end=" ")
-    print()
+    ans = sys.maxsize
+    left, right = 0, 0
+    cnt = 0
+    q = deque()
+    for start in range(N):
+        print(start,"======")
+        while right < N and cnt < K:
+            q.append(arr[right])
+            if arr[right] == 1: cnt += 1
+            right += 1
+            print(q)
+            print("left,right::",left,right)
+        if cnt == K:
+            ans = min(len(q), ans)
+            if arr[left] == 1: cnt -= 1
+            left += 1
+            q.popleft()
+        print("ans::",ans)
+    print(ans if ans != sys.maxsize else -1)
