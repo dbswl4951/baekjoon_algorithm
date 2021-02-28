@@ -12,6 +12,7 @@ def dfs(pre,cnt):
         result+=1
         return
     for i in range(26):
+        #그 전 선택문자와 현재 문자열이 같으면 pass
         if not alpha[i] or pre==i: continue
         alpha[i]-=1
         dfs(i,cnt+1)
