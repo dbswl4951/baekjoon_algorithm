@@ -29,7 +29,7 @@ def bfs(case):
             nx,ny=x+dx[i],y+dy[i]
             if 0<=nx<n and 0<=ny<n and visited[nx][ny]==-1 and tempBoard[nx][ny]!=1:
                 visited[nx][ny] = visited[x][y] + 1
-                #빈 칸이면
+                #빈 칸일때만 (비활성 바이러스는 초 갱신X)
                 if tempBoard[nx][ny]==0:
                     #몇 초 걸렸는지 갱신
                     second=max(m,visited[nx][ny])
