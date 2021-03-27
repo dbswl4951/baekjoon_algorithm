@@ -13,6 +13,7 @@ dy=[1,-1,0,0]
 def startGame():
     global x,y
     for order in orders:
+        print("order:",order)
         d=order-1
         nx,ny=x+dx[d],y+dy[d]
         if not 0<=nx<n or not 0<=ny<m:
@@ -30,6 +31,7 @@ def startGame():
         else:
             dice[0]=board[nx][ny]
             board[nx][ny]=0
+        print("dice:",dice)
         x,y=nx,ny
         print(dice[5])
 
