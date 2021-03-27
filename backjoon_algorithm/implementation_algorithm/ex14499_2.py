@@ -4,11 +4,11 @@ import sys
 dx=[0,0,-1,1]
 dy=[1,-1,0,0]
 
-# 동쪽n이동
+# 동쪽 이동
 def moveRight(dice):
     return [dice[4],dice[1],dice[5],dice[3],dice[2],dice[0]]
 
-# 서쪽n이동
+# 서쪽 이동
 def moveLeft(dice):
     return [dice[5],dice[1],dice[4],dice[3],dice[0],dice[2]]
 
