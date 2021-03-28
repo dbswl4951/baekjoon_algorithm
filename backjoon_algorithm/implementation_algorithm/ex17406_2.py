@@ -1,6 +1,6 @@
 #배열 돌리기 4
 '''
-순열 대신 백트레킹 + dfs 사용
+순열 대신 백트레킹 + dfs + bfs 사용
 '''
 from collections import deque
 from copy import deepcopy
