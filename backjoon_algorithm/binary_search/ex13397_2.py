@@ -1,4 +1,8 @@
 #구간 나누기2
+'''
+start : 조건을 만족하는 최댓값
+end : 조건을 불만족하는 최솟값
+'''
 import sys
 
 # 구간 나누기
@@ -18,13 +22,11 @@ def divideList(mid):
 n,m=map(int,sys.stdin.readline().split())
 numbers=list(map(int,sys.stdin.readline().split()))
 start,end=0,max(numbers)
-result=0
 while start<=end:
     mid=(start+end)//2   # mid : (최대-최소)의 최솟값 설정
     count=divideList(mid)
     if count<=m:
         end=mid-1
-        result=mid
     else:
         start=mid+1
-print(result)
+print(start)
