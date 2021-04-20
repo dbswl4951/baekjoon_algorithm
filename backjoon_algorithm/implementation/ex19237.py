@@ -72,10 +72,11 @@ while True:
                 board[i][j][1]-=1
                 if board[i][j][1]==0: board[i][j]=0
 
-    # 이동 한 상어 board에 표시
+    # 냄새 뿌리기
     for i in range(m):
         if shark[i]:
             board[shark[i][0]][shark[i][1]]=[i+1,k]
+
     # 상어가 한 마리만 남으면 종료
     if shark.count(0)==m-1:
         print(result)
