@@ -36,6 +36,8 @@ def grouping(x,y):
     sx,sy=21,21   # 기준 블록
     color,nomalCnt=-1,0    # 일반 블록 색, 개수
     blockGroup=[]
+    check=[[0]*n for _ in range(n)]
+    check[x][y]=1
 
     if board[x][y]>0:
         sx,sy=x,y
@@ -49,22 +51,19 @@ def grouping(x,y):
         x,y=q.popleft()
         for i in range(4):
             nx,ny=x+dx[i],y+dy[i]
-            if 0<=nx<n and 0<=ny<n and not visited[nx][ny] and board[nx][ny]>-1:
-                # 아직 기준 블록 안정해졌으면 정하기
-                if sx==21 and board[nx][ny]>0:
-                    sx,sy=nx,ny
-                # 행, 열 더 작은 블록 있으면 기준 블록 갱신
-                elif board[nx][ny]>0 and (nx<sx or (nx==sx and ny<sy)):
-                    sx,sy=nx,ny
-
+            if 0<=nx<n and 0<=ny<n and not check[nx][ny] and board[nx][ny]>-1:
                 # 일반 블록 만남
                 if board[nx][ny]>0:
                     if color==-1:
                         color=board[nx][ny]
                     elif color!=board[nx][ny]: continue
+                    # 기준 블록 갱신
+                    if nx<sx or (nx==sx and ny<sy):
+                        sx, sy = nx, ny
                     nomalCnt+=1
+                    visited[nx][ny] = 1
 
-                visited[nx][ny] = 1
+                check[nx][ny] = 1
                 q.append([nx, ny])
                 blockGroup.append([board[nx][ny], nx, ny])
 
@@ -118,7 +117,6 @@ score=0
 while True:
     visited = [[0] * n for _ in range(n)]
     maxBlockGroup,x,y = [],-1,-1  # 삭제 할 블록 그룹, 기준 x, 기준 y
-
     # 삭제 할 블록 그룹 찾기
     for i in range(n):
         for j in range(n):
@@ -132,7 +130,6 @@ while True:
                         maxBlockGroup=copy.deepcopy(blockGroup)
                         x,y=sx,sy
 
-    # 더이상 블록 그룹이 없으면 break
     if not maxBlockGroup: break
 
     # 블록 그룹 삭제 + 점수 증가 => 삭제 된 블록은 -2로 갱신
@@ -143,4 +140,5 @@ while True:
     board=rotate270(board)
     # 검은 블록 제외, 모든 블록 아래로 이동
     board=moveDown(board)
+
 print(score)
