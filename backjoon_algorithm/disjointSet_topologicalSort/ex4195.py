@@ -7,7 +7,6 @@ sys.setrecursionlimit(111111)
 
 # 경로 압축 방법 사용
 def find(x):
-    print("find x:", x)
     if parent[x]!=x:
         parent[x]=find(parent[x])
     return parent[x]
