@@ -2,6 +2,7 @@
 '''
 visited를 3차원 배열로 설정하는게 생각하기 어려웠다
 visitied[x][y]=[0,0,0,0]으로 각각 (x,y)에서의 동,서,남,북의 방향을 가지고 들렸는지 방문 체크 하는 용도로 사용
+또한 위치, 방향 중 하나라도 변경이 되면 큐에 삽입 해야 함
 '''
 import sys
 from collections import deque
