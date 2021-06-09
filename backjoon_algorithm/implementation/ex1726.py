@@ -19,7 +19,8 @@ def bfs():
         x,y,d,cnt=q.popleft()
         if x==ex and y==ey and d==ed: return cnt
 
-        # 현재 방향으로 이동 (최대 3칸)
+        # 현재 방향으로 이동 (최대 3칸)+
+        
         nx,ny=x,y
         for i in range(3):
             nx,ny=nx+dx[d],ny+dy[d]
