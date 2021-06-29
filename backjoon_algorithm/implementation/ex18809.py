@@ -1,9 +1,4 @@
 #Gaaaaaaaaaarden
-'''
-1. 초록색 배양액, 빨간색 배양액 뿌릴 곳 선택해서 뿌리기 (초록색:3, 빨간색:4)
-2. bfs로 초록색, 빨간색 배양액 퍼트리기
-3. 초록색, 빨간색 만난다면
-'''
 import sys,copy
 from itertools import combinations
 from collections import deque
@@ -17,8 +12,12 @@ def bfs(board,case,green):
 
     # 초록색, 빨간색 배양액 큐에 넣기
     for x,y in case:
-        if [x,y] in green: greenQ.append([x,y])
-        else: redQ.append([x,y])
+        if [x,y] in green:
+            greenQ.append([x,y])
+            board[x][y]=3
+        else:
+            redQ.append([x,y])
+            board[x][y]=4
 
     while greenQ:
         # 한 턴마다의 결과 저장
