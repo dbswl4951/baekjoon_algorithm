@@ -7,7 +7,7 @@ class SegTree:
         self.numbers=numbers
         self.init(1,0,n-1)    # (node,left,right)
 
-    # [left,right) 범위 내 최솟값 트리 생성
+    # [left,right] 범위 내 최솟값 트리 생성
     def init(self,node,left,right):
         # leaf node
         if left==right:
