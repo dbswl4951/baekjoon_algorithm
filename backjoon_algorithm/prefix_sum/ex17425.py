@@ -13,7 +13,7 @@ arr=[int(sys.stdin.readline().strip()) for _ in range(t)]
 dp=[0]*1000001
 # 에라토스테네스의 체
 for i in range(1,1000001):
-    # j의 약수의 합을 더함
+    # j의 약수(i)의 합 구함
     for j in range(i,1000001,i):
         dp[j]+=i
     # i전까지의 자연수의 약수 합을 더함
