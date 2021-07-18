@@ -1,32 +1,26 @@
 import sys
-input = sys.stdin.readline
+import heapq
 
-def combination(ind,len_string,combi):
-    print("combi====idx,combi::",ind,combi)
-    if ind == len_string:
-        print("result:",combi)
-    else:
-        for k in range(len_string):
-            if visited[k]:
-                print("idx,combi,k:",ind,combi,k)
-                print("visited:", visited)
-                temp = combi+string_list[k]
-                if temp not in record:
-                    visited[k] = 0
-                    record.add(temp)
-                    combination(ind+1,len_string,temp)
-                    visited[k] = 1
-                    print("back===visited:",visited)
-                else:
-                    print("temp,record:",temp,record)
-
-N = int(input())
-
+N, K = map(int, sys.stdin.readline().split())
+jew = []
 for _ in range(N):
-    string_list = list(input().strip())
-    visited = {}
-    string_list.sort()
-    len_string = len(string_list)
-    visited = [1]*(len(string_list))
-    record = set()
-    combination(0,len_string,'')
+    heapq.heappush(jew, list(map(int, sys.stdin.readline().split())))
+bags = []
+for _ in range(K):
+    bags.append(int(sys.stdin.readline()))
+bags.sort()
+
+answer = 0
+tmp_jew = []
+for bag in bags:
+    print("bag:",bag)
+    while jew and bag >= jew[0][0]:
+        print("j[0][0]:",jew[0][0])
+        heapq.heappush(tmp_jew, -heapq.heappop(jew)[1])
+        print("temp:",tmp_jew)
+    if tmp_jew:
+        answer -= heapq.heappop(tmp_jew)
+        print("answer:",answer)
+    elif not jew:
+        break
+print(answer)
