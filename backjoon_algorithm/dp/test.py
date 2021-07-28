@@ -1,21 +1,15 @@
-from sys import stdin
-
-n, k = map(int, stdin.readline().rstrip().split())
-students = [0] * n
-data = [0] *10
-count = 0
-
-for rank in range(n):
-    name = len(stdin.readline().rstrip())
-    students[rank] = name
-    print("rank,name:",rank,name)
-    print("student:",students)
-    if rank > k:
-        data[students[rank - k - 1]] -= 1
-        print("data:",data)
-    count += data[name]
-    data[name] += 1
-    print("count:",count)
-    print("data2:",data)
-
-print(count)
+import sys
+input = sys.stdin.readline
+while True:
+    n, m = map(float, input().split())
+    n, m = int(n), int(m * 100 + 0.5)
+    if n == 0 and m == 0:
+        break
+    dp = [0 for _ in range(m+1)]
+    for _ in range(n):
+        c, p = map(float, input().split())
+        c, p = int(c), int(p * 100 + 0.5)
+        for i in range(p, m+1):
+            dp[i] = max(dp[i], dp[i-p] + c)
+        print(dp[600])
+    print(dp[m])
