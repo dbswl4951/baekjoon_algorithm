@@ -1,13 +1,13 @@
-w = input()
-stack = []
-ppap = ["P", "P", "A", "P"]
-for i in range(len(w)):
-    stack.append(w[i])
-    if stack[-4:] == ppap:
-        for _ in range(4):
-            stack.pop()
-        stack.append("P")
-if stack == ppap or stack == ["P"]:
-    print("PPAP")
-else:
-    print("NP")
+import sys
+
+
+def kindergarden(k, l):
+    result = sorted([l[i + 1] - l[i] for i in range(len(l) - 1)], reverse=True)
+
+    return sum(result[k - 1:])
+
+
+N, K = map(int, sys.stdin.readline().split())
+h = list(map(int, sys.stdin.readline().split()))
+
+print(kindergarden(K, h))
