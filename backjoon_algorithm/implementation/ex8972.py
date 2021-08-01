@@ -18,8 +18,8 @@ def getDir(mx,my,ax,ay):
 
 def bfs(mx,my,d):
     arduinoDic=dict()   # 이동 후, 아두이노의 방향 저장
-
     nmx,nmy=mx+dx[d],my+dy[d]
+
     # 종수가 이동 한 칸에 아두이노가 있는 경우 => 실패
     if board[nmx][nmy]=='R': return -1,-1
     board[mx][my] = '.'
@@ -27,7 +27,6 @@ def bfs(mx,my,d):
 
     while arduinos:
         ax,ay=arduinos.popleft()
-
         dir=getDir(nmx,nmy,ax,ay)
         # 아두이노가 종수의 위치쪽으로 이동
         nax,nay=ax+dx[dir],ay+dy[dir]
