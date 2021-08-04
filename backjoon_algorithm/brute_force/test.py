@@ -1,88 +1,77 @@
-from itertools import combinations
-from collections import deque
-import sys
-import copy
+from sys import stdin
 
-dx = [-1, 1, 0, 0]
-dy = [0, 0, -1, 1]
+read = lambda: stdin.readline().rstrip()
 
 
-def bfs(array, selected, green):
-    cnt = 0
-    green_q = deque()
-    red_q = deque()
-
-    for row, col in selected:
-        if [row, col] in green:
-            green_q.append([row, col])  # 초록색 배양액
-            array[row][col] = 3
-        else:
-            red_q.append([row, col])  # 빨간색 배양액
-            array[row][col] = 4
-
-    while green_q:  # 초록색 배양액이 빌때까지
-        green_temp = set()
-        red_temp = set()
-        while green_q:
-            print("green======")
-            x, y = green_q.popleft()
-            print("x,y:",x,y)
-            array[x][y] = 3
-            for i in range(4):
-                new_x, new_y = x + dx[i], y + dy[i]
-                if 0 <= new_x < n and 0 <= new_y < m:
-                    if array[new_x][new_y] == 1 or array[new_x][new_y] == 2:
-                        green_temp.add((new_x, new_y))
-                        print("green temp:",green_temp)
-        while red_q:
-            print("red=======")
-            x, y = red_q.popleft()
-            array[x][y] = 4
-            print("x,y:", x, y)
-            for i in range(4):
-                new_x, new_y = x + dx[i], y + dy[i]
-                if 0 <= new_x < n and 0 <= new_y < m:
-                    if array[new_x][new_y] == 1 or array[new_x][new_y] == 2:
-                        red_temp.add((new_x, new_y))
-                        print("red temp:", red_temp)
-
-        inter = green_temp & red_temp
-        green_temp = green_temp - inter
-        red_temp = red_temp - inter
-        for row, col in inter:
-            array[row][col] = 5
-            cnt += 1
-            print("x,y,cnt:",row,col,cnt)
-        for row, col in green_temp:
-            array[row][col] = 3
-        for row, col in red_temp:
-            array[row][col] = 4
-        green_q.extend(green_temp)
-        red_q.extend(red_temp)
-        print("board:",array)
-
-    print("cnt???",cnt)
-    return cnt
+def psum(x1, y1, x2, y2):
+    print("x1,y1,x2,y3:",x1,y1,x2,y2)
+    global s
+    return s[x2][y2] - s[x2][y1 - 1] - s[x1 - 1][y2] + s[x1 - 1][y1 - 1]
 
 
-if __name__ == "__main__":
-    n, m, g, r = map(int, sys.stdin.readline().split())
-    maps = [list(map(int, sys.stdin.readline().split())) for _ in range(n)]
+n, m = map(int, read().split())
 
-    # 배양액을 뿌릴 수 있는 위치, 뿌릴 수 없는 위치 탐색
-    location = []
-    for i in range(n):
-        for j in range(m):
-            if maps[i][j] == 2:
-                location.append([i, j])
+arr = [[0] * (m + 1) for i in range(n + 1)]
+s = [[0] * (m + 1) for i in range(n + 1)]
 
-    answer = 0
-    for selected in list(combinations(location, g + r)):
-        # selected를 green과 red로 나누기
-        for green in list(combinations(selected, g)):
-            print("green:", green)
-            copy_maps = copy.deepcopy(maps)
-            answer = max(answer, bfs(copy_maps, selected, green))
+for i in range(1, n + 1):
+    arr[i] = [0] + list(map(int, list(read())))
 
-    # 출력
-    print(answer)
+for i in range(1, n + 1):
+    for j in range(1, m + 1):
+        s[i][j] = s[i - 1][j] + s[i][j - 1] - s[i - 1][j - 1] + arr[i][j]
+print("arr:",arr)
+print("s:",s)
+res = 0
+
+for i in range(1, m - 1):
+    for j in range(i + 1, m):
+        print("i,j::",i,j)
+        r1 = psum(1, 1, n, i)
+        r2 = psum(1, i + 1, n, j)
+        r3 = psum(1, j + 1, n, m)
+        print("r1,r2,r3:",r1,r2,r3)
+        if res < (r1 * r2 * r3):
+            res = r1 * r2 * r3
+
+for i in range(1, n - 1):
+    for j in range(i + 1, n):
+        r1 = psum(1, 1, i, m)
+        r2 = psum(i + 1, 1, j, m)
+        r3 = psum(j + 1, 1, n, m)
+        if res < (r1 * r2 * r3):
+            res = r1 * r2 * r3
+
+for i in range(1, n):
+    for j in range(1, m):
+        r1 = psum(1, 1, n, j)
+        r2 = psum(1, j + 1, i, m)
+        r3 = psum(i + 1, j + 1, n, m)
+        if res < (r1 * r2 * r3):
+            res = r1 * r2 * r3
+
+for i in range(1, n):
+    for j in range(1, m):
+        r1 = psum(1, 1, i, j)
+        r2 = psum(i + 1, 1, n, j)
+        r3 = psum(1, j + 1, n, m)
+        if res < (r1 * r2 * r3):
+            res = r1 * r2 * r3
+
+for i in range(1, n):
+    for j in range(1, m):
+        r1 = psum(1, 1, i, m)
+        r2 = psum(i + 1, 1, n, j)
+        r3 = psum(i + 1, j + 1, n, m)
+        if res < (r1 * r2 * r3):
+            res = r1 * r2 * r3
+
+for i in range(1, n):
+    for j in range(1, m):
+        r1 = psum(1, 1, i, j)
+        r2 = psum(1, j + 1, i, m)
+        r3 = psum(i + 1, 1, n, m)
+        if res < (r1 * r2 * r3):
+            res = r1 * r2 * r3
+
+print(res)
