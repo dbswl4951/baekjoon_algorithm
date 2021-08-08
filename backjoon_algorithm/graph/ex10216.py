@@ -1,4 +1,8 @@
 #Count Circle Groups
+'''
+union-find가 끝난 후, 그룹 개수 구할 때 len(set(parent))로 구했더니 시간초과 났다.
+result라는 상수 변수를 두고, 그룹 합칠 때마다 -1 해줘서 그룹 개수를 구해야 시간초과가 나지 않는다.
+'''
 import sys
 
 # 두 진영 사이의 거리 구하기
