@@ -1,35 +1,79 @@
+from collections import deque
 import sys
 
-n = (int(input()) - 2) // 2
-sector_no = dict()
-top = [0] * n
-bottom = [0] * n
-width = [0] * n
-sys.stdin.readline()
+input = sys.stdin.readline
+dx = [1, -1, 0, 0, 1, 1, -1, -1]
+dy = [0, 0, 1, -1, 1, -1, 1, -1]
+
+def bfs(x):
+    q.append(x)
+    c.append(x)
+    cnt = 0
+    while q:
+        qlen = len(q)
+        while qlen:
+            x = q.popleft()
+            print("x ==== ",x)
+            if x == e:
+                print(cnt)
+                return
+            check_turn(x)
+            for i in range(4):
+                check = []
+                flag = 0
+                for j in range(3):
+                    nx = x[j][0] + dx[i]
+                    ny = x[j][1] + dy[i]
+                    if 0 <= nx < n and 0 <= ny < n and a[nx][ny] != '1':
+                        check.append([nx, ny])
+                    else:
+                        flag = 1
+                        break
+                if check not in c and flag == 0:
+                    c.append(check)
+                    q.append(check)
+            qlen -= 1
+        cnt += 1
+    print(0)
+
+def check_turn(x):
+    # 회전 할 수 있는지 체크
+    for i in range(4, 8):
+        nx = x[1][0] + dx[i]
+        ny = x[1][1] + dy[i]
+        if nx < 0 or ny < 0 or nx >= n or ny >= n or a[nx][ny] == '1':
+            return
+    # 가로
+    if x[0][0] == x[1][0]:
+        print("가로")
+        tx = x[1][0]; ty = x[1][1]
+        if a[tx-1][ty] != '1' and a[tx+1][ty] != '1':
+            nb = [[tx-1, ty], [tx, ty], [tx+1, ty]]
+            print("nb:",nb)
+            if nb not in c:
+                c.append(nb)
+                q.append(nb)
+    # 세로
+    elif x[0][1] == x[1][1]:
+        print("세로")
+        tx = x[1][0]; ty = x[1][1]
+        if a[tx][ty-1] != '1' and a[tx][ty+1] != '1':
+            nb = [[tx, ty-1], [tx, ty], [tx, ty+1]]
+            print("nb:", nb)
+            if nb not in c:
+                c.append(nb)
+                q.append(nb)
+
+n = int(input())
+a = [list(input().strip()) for _ in range(n)]
+c, b, e = [], [], []
+q = deque()
+
 for i in range(n):
-    start = int(sys.stdin.readline().split()[0])
-    end, bot = map(int, sys.stdin.readline().split())
-    sector_no[(start, end)] = i
-    bottom[i] = bot
-    width[i] = end - start
-sys.stdin.readline()
+    for j in range(n):
+        if a[i][j] == 'B':
+            b.append([i, j])
+        elif a[i][j] == 'E':
+            e.append([i, j])
 
-k = int(sys.stdin.readline())
-holes = [0] * k
-for i in range(k):
-    start, surface, end, temp2 = map(int, sys.stdin.readline().split())
-    no = sector_no[(start, end)]
-    for left in range(no, -1, -1):
-        surface = min(surface, bottom[left])
-        top[left] = max(surface, top[left])
-    print("top:", top)
-    surface = bottom[no]
-    for right in range(no + 1, n):
-        surface = min(surface, bottom[right])
-        top[right] = max(surface, top[right])
-    print("top22:",top)
-
-ans = 0
-for no in range(n):
-    ans += width[no] * (bottom[no] - top[no])
-print(ans)
+bfs(b)
