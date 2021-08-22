@@ -1,79 +1,86 @@
-from collections import deque
-import sys
+def game(idx, nations_score, probability):
+    print("idx,probability : ",idx,probability)
+    print("nations_score:",nations_score)
+    # 모든 매치가 끝났을 경우
+    if idx == 6:
+        # value로 sort
+        sorted_score = sorted(list(nations_score.items()), key=lambda x: x[1], reverse=True)
+        print("sorted_score:",sorted_score)
 
-input = sys.stdin.readline
-dx = [1, -1, 0, 0, 1, 1, -1, -1]
-dy = [0, 0, 1, -1, 1, -1, 1, -1]
-
-def bfs(x):
-    q.append(x)
-    c.append(x)
-    cnt = 0
-    while q:
-        qlen = len(q)
-        while qlen:
-            x = q.popleft()
-            print("x ==== ",x)
-            if x == e:
-                print(cnt)
-                return
-            check_turn(x)
+        # 동점 4명
+        if sorted_score[0][1] == sorted_score[1][1] == sorted_score[2][1] == sorted_score[3][1]:
             for i in range(4):
-                check = []
-                flag = 0
-                for j in range(3):
-                    nx = x[j][0] + dx[i]
-                    ny = x[j][1] + dy[i]
-                    if 0 <= nx < n and 0 <= ny < n and a[nx][ny] != '1':
-                        check.append([nx, ny])
-                    else:
-                        flag = 1
-                        break
-                if check not in c and flag == 0:
-                    c.append(check)
-                    q.append(check)
-            qlen -= 1
-        cnt += 1
-    print(0)
-
-def check_turn(x):
-    # 회전 할 수 있는지 체크
-    for i in range(4, 8):
-        nx = x[1][0] + dx[i]
-        ny = x[1][1] + dy[i]
-        if nx < 0 or ny < 0 or nx >= n or ny >= n or a[nx][ny] == '1':
+                nations_probability[sorted_score[i][0]] += probability * 1 / 2  # 4팀중 2팀
+            print("probability===",nations_probability)
             return
-    # 가로
-    if x[0][0] == x[1][0]:
-        print("가로")
-        tx = x[1][0]; ty = x[1][1]
-        if a[tx-1][ty] != '1' and a[tx+1][ty] != '1':
-            nb = [[tx-1, ty], [tx, ty], [tx+1, ty]]
-            print("nb:",nb)
-            if nb not in c:
-                c.append(nb)
-                q.append(nb)
-    # 세로
-    elif x[0][1] == x[1][1]:
-        print("세로")
-        tx = x[1][0]; ty = x[1][1]
-        if a[tx][ty-1] != '1' and a[tx][ty+1] != '1':
-            nb = [[tx, ty-1], [tx, ty], [tx, ty+1]]
-            print("nb:", nb)
-            if nb not in c:
-                c.append(nb)
-                q.append(nb)
+        # 동점 3명
+        elif sorted_score[0][1] > sorted_score[1][1] == sorted_score[2][1] == sorted_score[3][1]:
+            nations_probability[sorted_score[0][0]] += probability
+            for i in range(1, 4):
+                nations_probability[sorted_score[i][0]] += probability * 1 / 3  # 3팀중 1팀
+            print("probability===", nations_probability)
+            return
+        elif sorted_score[0][1] == sorted_score[1][1] == sorted_score[2][1]:
+            for i in range(3):
+                nations_probability[sorted_score[i][0]] += probability * 2 / 3  # 3팀중 2팀
+            print("probability===", nations_probability)
+            return
+        # 동점 2명
+        elif sorted_score[0][1] > sorted_score[1][1] == sorted_score[2][1]:
+            nations_probability[sorted_score[0][0]] += probability
 
-n = int(input())
-a = [list(input().strip()) for _ in range(n)]
-c, b, e = [], [], []
-q = deque()
+            for i in range(1, 3):
+                nations_probability[sorted_score[i][0]] += probability * 1 / 2  # 2팀중 1팀
+            print("probability===", nations_probability)
+            return
+        # 동점자 없음
+        else:
+            for i in range(2):
+                nations_probability[sorted_score[i][0]] += probability  # 상위 2팀
+            print("probability===", nations_probability)
+            return
 
-for i in range(n):
-    for j in range(n):
-        if a[i][j] == 'B':
-            b.append([i, j])
-        elif a[i][j] == 'E':
-            e.append([i, j])
+    # A 승
+    nations_score[data[idx][0]] += 3
+    print("idx,probability : ", idx, probability)
+    print('A팀 '+data[idx][0]+" 승 !")
+    game(idx + 1, nations_score, probability * float(data[idx][2]))
+    nations_score[data[idx][0]] -= 3
 
-bfs(b)
+    # 무승부
+    print("idx,probability : ", idx, probability)
+    print("무승부!")
+    nations_score[data[idx][0]] += 1
+    nations_score[data[idx][1]] += 1
+    game(idx + 1, nations_score, probability * float(data[idx][3]))
+    nations_score[data[idx][0]] -= 1
+    nations_score[data[idx][1]] -= 1
+
+    # B 승
+    print("idx,probability : ", idx, probability)
+    print('B팀 '+data[idx][1]+" 승 !")
+    nations_score[data[idx][1]] += 3
+    game(idx + 1, nations_score, probability * float(data[idx][4]))
+    nations_score[data[idx][1]] -= 3
+
+
+if __name__ == "__main__":
+
+    nations = input().split()
+    nations_score = {}
+    nations_probability = {}
+    data = []
+
+    for key in nations:
+        nations_score[key], nations_probability[key] = 0, 0
+
+    for _ in range(6):
+        temp = list(input().split())
+        data.append(temp)
+    print("nations_score:",nations_score)
+    print("data:",data)
+
+    game(0, nations_score, 1)
+
+    for key in nations:
+        print(nations_probability[key])
