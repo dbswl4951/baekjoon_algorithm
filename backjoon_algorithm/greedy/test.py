@@ -1,51 +1,55 @@
 import sys
-from collections import deque
 
-N=int(input())
-L=list(map(int,input().split()))
-money=int(input())
+def find(x):
+    if root[x] != x:
+        root[x] = find(root[x])
+    return root[x]
 
-minCost=min(L)
-minNum=L.index(minCost)
-if N==1:
-    print(0)
-    sys.exit()
+def union(a, b):
+    a = find(a)
+    b = find(b)
+    if a < b:
+        root[b] = a
+        power[a] += power[b]
+    else:
+        root[a] = b
+        power[b] += power[a]
 
-#digit 자리수 검사해야함
-def add(remainMoney,digit):
-    print("remainCost,pick===",remainMoney,digit)
-    #가장 큰 오른쪽 숫자부터 가장 큰거 넣어보기
-    for i in range(digit,-1,-1):
-        # 현재 검사하는 수가 최대 수가 아니면
-        if pick[i]!=N-1:
-            print("i:",i)
-            #큰거부터 넣어봄
-            for j in range(N-1,pick[i],-1):
-                print("j:",j)
-                nowCost=L[j]-L[pick[i]]
-                print("nowCost:",nowCost)
-                # 남은 돈이 있으면 수 변경
-                if nowCost<=remainMoney:
-                    print("수 변경 i,j:",i,j)
-                    pick[i]=j
-                    print("pick:",pick)
-                    add(remainMoney-nowCost,digit-1)
-                    return
-    #모두다 0이면
-    if not any(pick):
-        print("다 0!!!")
-        if not pick:
-            print(0)
-            sys.exit()
-        pick.pop()
-        print("pick:",pick)
-        add(remainMoney+L[0],digit-1)
+def fight(a, b):
+    a = find(a)
+    b = find(b)
+    if power[a] > power[b]:
+        power[a] -= power[b]
+        root[b] = a
+    elif power[a] < power[b]:
+        power[b] -= power[a]
+        root[a] = b
+    else:
+        root[a] = 0
+        root[b] = 0
 
-num=money//minCost
-pick=[minNum for i in range(num)]
-cost=num*minCost
-add(money-cost,num-1)
-ans=0
-for i in range(len(pick)):
-    ans+=(10**i)*pick[i]
-print(ans)
+n, m = map(int, sys.stdin.readline().rstrip().split())
+root = [0 for _ in range(n + 1)]
+power = [0 for _ in range(n + 1)]
+for i in range(1, n + 1):
+    root[i] = i
+for i in range(1, n + 1):
+    power[i] = int(sys.stdin.readline())
+for _ in range(m):
+    o, p, q = map(int, sys.stdin.readline().rstrip().split())
+    if o == 1: union(p, q)
+    else: fight(p, q)
+    print('parent---', root)
+    print('people---', power)
+
+s = set()
+ans = []
+for i in range(1, n + 1):
+    p = find(i)
+    if p != 0:
+        s.add(find(i))
+for i in s:
+    ans.append(power[i])
+ans.sort()
+print(len(s))
+for i in ans: print(i, end=' ')
