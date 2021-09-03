@@ -9,6 +9,7 @@ from collections import deque
 def topological():
     q=deque()
     q.append(1)
+    # 사이클 없애기 위해 시작 지점(1) 진입 차수를 0으로 설정
     indegree[1]=0
 
     while q:
