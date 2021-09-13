@@ -1,23 +1,26 @@
+from bisect import bisect_right
 import sys
-from bisect import bisect_left
 input = sys.stdin.readline
 
+n, s = map(int, input().split())
+pictures = []
+heights = []
 
-while True:
-    try:
-        n = int(input())
-        lst = list(map(int, input().split()))
-        s = [0]
+for _ in range(n):
+    h, c = map(int, input().split())
+    pictures.append([h, c])
+    heights.append(h)
 
-        for i in lst:
-            print("i: ",i)
-            if s[-1] < i:
-                s.append(i)
-            else:
-                print(bisect_left(s, i))
-                s[bisect_left(s, i)] = i
-                print("s:",s)
+heights.sort()
+pictures.sort(key=lambda x:(x[0],-x[1]))
+print(pictures)
 
-        print(len(s) - 1)
-    except:
-        break
+dp = [0]
+for i in range(n):
+    h, c = pictures[i]
+    j = bisect_right(heights, h-s)
+    dp.append(max(dp[i], c+dp[j]))
+    print("h,c,j:",h,c,j)
+    print("dp:",dp)
+
+print(dp[n])
