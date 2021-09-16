@@ -1,26 +1,58 @@
-from bisect import bisect_right
 import sys
 input = sys.stdin.readline
 
-n, s = map(int, input().split())
-pictures = []
-heights = []
+def is_possible(target):
+    grpCnt = 1
+    total = 0
+    for number in numbers:
+        total += number
+        print('number, total : ',number,total)
+        if total > target:
+            grpCnt += 1
+            total = number
+            print('grpCnt:',grpCnt)
 
-for _ in range(n):
-    h, c = map(int, input().split())
-    pictures.append([h, c])
-    heights.append(h)
+    return grpCnt <= M
 
-heights.sort()
-pictures.sort(key=lambda x:(x[0],-x[1]))
-print(pictures)
+def solve(target):
+    count = 0
+    total = 0
+    result = []
+    m = M
+    for idx in range(N):
+        total += numbers[idx]
+        print('idx, total :',idx,total)
+        if total > target:
+            m -= 1
+            total = numbers[idx]
+            result.append(count)
+            count = 0
+            print('m, result : ',m,result)
+        count += 1
+        print('count:',count)
+        if N - idx == m:
+            break
 
-dp = [0]
-for i in range(n):
-    h, c = pictures[i]
-    j = bisect_right(heights, h-s)
-    dp.append(max(dp[i], c+dp[j]))
-    print("h,c,j:",h,c,j)
-    print("dp:",dp)
+    while m:
+        result.append(count)
+        count = 1
+        m -= 1
+        print('result, count, m : ',result,count,m)
+    return result
 
-print(dp[n])
+
+N, M = map(int, input().split())
+numbers = list(map(int, input().split()))
+left = 0
+right = sum(numbers)
+
+while left <= right:
+    mid = (left + right) // 2
+    print('left, right, mid : ',left,right,mid)
+    if is_possible(mid):
+        right = mid - 1
+    else:
+        left = mid + 1
+
+print(left)
+print(*solve(left))
