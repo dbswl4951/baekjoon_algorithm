@@ -28,6 +28,7 @@ def solve(target):
             total=arr[i]
             tm-=1
         count+=1
+        # 왼쪽부터 target만큼씩 넣다가, 나머지는 다 1로 채우기
         if n-i == tm: break
 
     while tm:
