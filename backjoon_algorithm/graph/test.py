@@ -1,9 +1,7 @@
 import sys
 from queue import Queue
 
-arr = [[0 for col in range(101)] for row in range(101)]
-visit = [0 for col in range(101)]
-ans = []
+
 
 
 def solution(x, n, love):
@@ -35,10 +33,15 @@ def solution(x, n, love):
 if __name__ == "__main__":
     cnt = 0
     n = int(input())
+    arr = [[0 for col in range(n + 1)] for row in range(n + 1)]
+    visit = [0 for col in range(n+1)]
+    ans = []
+
     for i in range(1, n + 1):
         num = list(map(int, input().split()))
         for j in range(0, len(num)):
             arr[i][j + 1] = num[j]
+    print('arr :',arr)
 
     for i in range(1, n + 1):
         if visit[i] == 0:
@@ -46,6 +49,7 @@ if __name__ == "__main__":
             for j in range(1, n + 1):
                 if arr[i][j] == 0:
                     love.append(j)
+            print('love :',love)
             if len(love) == 1:
                 print(0)
                 sys.exit()
