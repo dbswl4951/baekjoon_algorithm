@@ -1,95 +1,76 @@
 #가스관
-import sys,copy
+import sys
 from collections import deque
 
-dx=[-1,1,0,0]
-dy=[0,0,-1,1]
+dx = [0, 1, 0, -1]
+dy = [1, 0, -1, 0]
 
-def setBlock(t):
-    if t==0: return '|'
-    elif t==1: return '-'
-    elif t==2: return '+'
-    elif t==3: return '1'
-    elif t==4: return '2'
-    elif t==5: return '3'
-    else: return '4'
+# 파이프의 모양에 따라 갈 수 있는 모든 위치 반환
+def getDir(p):
+    if p=='|':
+        return [1, 3]
+    elif p == '-':
+        return [0, 2]
+    elif p == '+' or p == 'M' or p == 'Z':
+        return [0, 1, 2, 3]
+    elif p == '1':
+        return [0, 1]
+    elif p == '2':
+        return [0, 3]
+    elif p == '3':
+        return [2, 3]
+    elif p == '4':
+        return [1, 2]
 
-def dfs(board,x,y,dirX,dirY,visited):
-    if board[x][y]=='.': return False
+def bfs(x,y,dir):
+    global px,py
 
-    block=board[x][y]
-    if block=='|':
-
-
-r,c=map(int,sys.stdin.readline().split())
-board=[list(sys.stdin.readline().split()) for _ in range(r)]
-mx,my=0,0
-for i in range(r):
-    for j in range(c):
-        if board[i][j]=='M': mx=i; my=j
-
-for i in range(r):
-    for j in range(c):
-
-        # 빈 칸을 발견하면 임의의 블록 (7가지)를 놓는다
-        if board[i][j]=='.':
-            for t in range(7):
-                copyBoard = copy.deepcopy(board)
-                copyBoard[i][j]=setBlock(t)
-                visited=[[0]*c for _ in range(r)]
-                visited[mx][my]=1
-                # 시작지점에서 연결 된 블록 찾기
-                for d in range(4):
-                    nx,ny=mx+dx[i],my+dy[i]
-                    if copyBoard[nx][ny]!='.':
-                        dfs(copyBoard,nx,ny,dx[i],dy[i],visited)
-
-'''
-#가스관
-import sys,copy
-from collections import deque
-
-dx=[-1,1,0,0]
-dy=[0,0,-1,1]
-
-def setBlock(t):
-    if t==0: return '|'
-    elif t==1: return '-'
-    elif t==2: return '+'
-    elif t==3: return '1'
-    elif t==4: return '2'
-    elif t==5: return '3'
-    else: return '4'
-
-def bfs(board):
     q=deque()
-    q.append([mx,my])
-    visited=[[0]*c for _ in range(r)]
-    visited[mx][my]=1
+    q.append([x,y,dir])
 
     while q:
-        x,y=q.popleft()
-        if board[x][y]=='Z' : continue
-        for i in range(4):
-            nx,ny=x+dx[i],y+dy[i]
-            if 0<=nx<r and 0<=ny<c and board[nx][ny]!='.' and board[nx][ny]!='Z' and not visited[nx][ny]:
-                block=board[nx][ny]
+        x,y,dir = q.popleft()
+        for d in dir:
+            nx,ny = x+dx[d],y+dy[d]
+            if 0<=nx<r and 0<=ny<c and not visited[nx][ny]:
+                if board[nx][ny]!='.':
+                    visited[nx][ny]=1
+                    # 현재 파이프를 통해 갈 수 있는 모든 방향 구함
+                    nDir = getDir(board[nx][ny])
+                    q.append([nx,ny,nDir])
+                else:
+                    # M, Z에 이어진 파이프는 무조건 한 개
+                    if board[x][y]=='M' or board[x][y]=='Z': continue
+                    if not px and not py: px,py = nx+1,ny+1
+                    # 온 방향과 반대 방향 구하기
+                    nd = (d+2)%4
+                    if nd not in pipeList: pipeList.append(nd)
 
-
-r,c=map(int,sys.stdin.readline().split())
-board=[list(sys.stdin.readline().split()) for _ in range(r)]
-mx,my=0,0
+r,c = map(int,sys.stdin.readline().split())
+board = [list(sys.stdin.readline().strip()) for _ in range(r)]
+mx,my,zx,zy = 0,0,0,0
+pipeList,px,py=[],0,0
+visited = [[0]*c for _ in range(r)]
 for i in range(r):
     for j in range(c):
-        if board[i][j]=='M': mx=i; my=j
+        if board[i][j]=='M': mx,my = i,j
+        elif board[i][j]=='Z': zx,zy = i,j
 
+bfs(mx,my,[0,1,2,3])
+bfs(zx,zy,[0,1,2,3])
+
+# 아직 가스관 설치 전이므로 M~Z 사이는 떨어져 있을 수 있음
+# 따라서, 가스관이 설치되어 있는데 bfs로 방문 한 기록이 없을 경우 bfs 실행
 for i in range(r):
     for j in range(c):
-        # 빈 칸을 발견하면 임의의 블록 (7가지)를 놓는다
-        if board[i][j]=='.':
-            copyBoard=copy.deepcopy(board)
-            for t in range(7):
-                copyBoard[i][j]=setBlock(t)
-                bfs(copyBoard)
+        if board[i][j]!='.' and not visited[i][j]:
+            bfs(i,j,getDir(board[i][j]))
 
-'''
+if len(pipeList) == 4: print(px,py,'+')
+else:
+    block = ['|', '-', '1', '2', '3', '4']
+    pipeList.sort()
+    # 파이프를 하나씩 대조해보면서 구한 이동방향과 맞는지 확인
+    for b in block:
+        if pipeList == getDir(b):
+            print(px,py,b)

@@ -3,7 +3,6 @@
 P0
 0P
 P
-
 - P는 0 포함 X
 - P는 소수
 '''
@@ -35,5 +34,5 @@ def solution(n, k):
         if is_prime_number(ap): result+=1
     return result
 
-print(solution(437674,3))
+#print(solution(437674,3))
 print(solution(110011,10))
