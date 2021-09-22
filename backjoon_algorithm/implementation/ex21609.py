@@ -1,144 +1,153 @@
 #상어 중학교
 '''
-2021 삼성 상반기 오전 문제
-
-검은색 : -1
-무지개 : 0
-일반 : M이하의 자연수
-
-- 블록 그룹엔 일반 블록이 하나 이상 있어야 함
-- 일반 블록의 색은 모두 같아야 함
-- 검은색 블록 포함 되면 X
-- 무지개 블록 개수 상관 X
-- 블록은 2개 이상
-
-< 블록 그룹이 존재 하는 동안 계속 반복 >
-< 최종 점수 구하기 >
-1. 크기가 가장 큰 블록 그룹 찾기 (bfs)
-  1) 크기가 같은 그룹이 여러개라면, 무지개 블록 수가 많은 그룹
-  2) (1)이 여러개라면, 기준 블록 행이 가장 큰 것
-  3) (2)가 여러개라면, 기준 블록 열이 가장 큰 것
-    * 기준 블록 : 무지개 블록이 아닌 블록 중, 행/열이 가장 작은 것
-2. 블록 그룹 제거 (B개)
-3. B^2 점수 +
-4. 검은 블록 제외, 모든 블록이 아래로 이동
-5. 90도 반시계 방향 회전
-6. 4번 반복
+[ PLAY ]
+1. 크기가 가장 큰 블록 그룹 찾기
+    1) 여러개라면 무지개 블록이 많은 것
+    2) (1)이 여러개 => 기준 블록 행이 큰거
+    3) (2)가 여러개 => 기준 블록 열이 가장 큰거
+            (1) 방문하지 않은 모든 좌표에서 BFS 실행
+            (2) 이 때, 무지개 블록은 방문 체크 X
+            (3) 가장 크기가 가장 큰 블록 그룹 리턴
+2. 1에서 찾은 블록 모두 제거 + (블록 수^2)점 획득
+3. 검은 블록 제외 모든 블록 중력 작용
+            (1) 열 한 개씩 검은색 블록이 있는지 확인
+            (2) 검은색 블록 O
+                몇번째 행인지 저장
+                그 행보다 작은 행들 블록 행 큰 애들부터 검사 (내려갈 수 있는지 없는지)
+                내려갈 수 있다면 다른 블록 or 검은색 블록 위 or 바닥에 도달 할 때까지 중력 작용
+            (3) 검은색 블록 X
+                아래부터 내려갈 수 있는지 없는지 검사
+                내려갈 수 있으면 다른 블록 or 바닥 만나기 전까지 계속 중력 작용
+4. 모든 블록 90도 반시계 방향 회전
+5. 3번 다시 실행
 '''
 from collections import deque
-import copy
 
-dx=[-1,1,0,0]
-dy=[0,0,-1,1]
+dx = [-1,1,0,0]
+dy = [0,0,-1,1]
 
-# 블록 그룹 구하기
-def grouping(x,y):
-    sx,sy=21,21   # 기준 블록
-    color,nomalCnt=-1,0    # 일반 블록 색, 개수
-    blockGroup=[]
-    check=[[0]*n for _ in range(n)]
-    check[x][y]=1
+# 가장 크기가 큰 블록 그룹 찾기
+def findBolckGroup(x,y,color):
+    global nomalBlockCnt, colorBlockCnt, standardBlock, blockGroup
 
-    if board[x][y]>0:
-        sx,sy=x,y
-        color=board[x][y]
-        nomalCnt+=1
-        blockGroup.append([color,x,y])
-    q=deque()
+    q = deque()
     q.append([x,y])
+    visited = [[0]*n for _ in range(n)]     # 일반 + 무지개 블록 방문 체크
+    visited[x][y]=1
+    nomalCnt,colorCnt,standard = 1,0,[x,y]     # 일반 블록 개수, 무지개 블록 개수, 기준 블록 (x,y)
+    group = [[x,y]]
 
     while q:
-        x,y=q.popleft()
+        x,y = q.popleft()
         for i in range(4):
-            nx,ny=x+dx[i],y+dy[i]
-            if 0<=nx<n and 0<=ny<n and not check[nx][ny] and board[nx][ny]>-1:
-                # 일반 블록 만남
-                if board[nx][ny]>0:
-                    if color==-1:
-                        color=board[nx][ny]
-                    elif color!=board[nx][ny]: continue
-                    # 기준 블록 갱신
-                    if nx<sx or (nx==sx and ny<sy):
-                        sx, sy = nx, ny
-                    nomalCnt+=1
-                    visited[nx][ny] = 1
-
-                check[nx][ny] = 1
-                q.append([nx, ny])
-                blockGroup.append([board[nx][ny], nx, ny])
-
-    if len(blockGroup)>=2 and nomalCnt>=1:
-        return blockGroup,sx,sy
-    return None,None,None
-
-# 블록 그룹 제거
-def deleteBolckGroup(blockGroup):
-    global score
-    bLen=len(blockGroup)
-    for num,x,y in blockGroup:
-        board[x][y]=-2
-    # 점수 증가
-    score+=bLen*bLen
-
-# 검은 블록 제외, 모든 블록 아래로 이동
-def moveDown(board):
-    for j in range(n):
-        high,top=0,n
-        for i in range(n-1,-1,-1):
-            if board[i][j]==-2:
-                high+=1
-            elif board[i][j]==-1:
-                top=i
-                high=0
-            else:
-                if top-1==i:
-                    top-=1
-                    continue
-                elif top!=n:
-                    board[i+high][j]=board[i][j]
+            nx,ny = x+dx[i],y+dy[i]
+            if 0<=nx<n and 0<=ny<n and (board[nx][ny]==0 or board[nx][ny]==color) and not visited[nx][ny]:
+                # 일반 블록
+                if board[nx][ny] == color:
+                    nomalVisited[nx][ny] = 1
+                    nomalCnt += 1
+                    # 기준 블록 찾기
+                    if standard[0] == nx:
+                        if standard[1] > ny:
+                            standard = [nx, ny]
+                    elif standard[0] > nx:
+                        standard = [nx, ny]
+                # 무지개 블록
                 else:
-                    board[top-1][j]=board[i][j]
-                    top-=1
-                board[i][j] = -2
-    return board
+                    colorCnt += 1
+
+                visited[nx][ny]=1
+                group.append([nx,ny])
+                q.append([nx,ny])
+
+    if nomalCnt+colorCnt > 1:
+        # 무지개 블록 더 많은 애 찾기
+        if nomalBlockCnt+colorBlockCnt == nomalCnt+colorCnt:
+            if colorBlockCnt == colorCnt:
+                # 기준 블록 행 큰거 찾기
+                if standardBlock[0] == standard[0]:
+                    if standardBlock[1] < standard[1]:
+                        changeBlockGroup(nomalCnt,colorCnt,standard)
+                        return group
+                elif standardBlock[0] < standard[0]:
+                    changeBlockGroup(nomalCnt,colorCnt,standard)
+                    return group
+            elif colorBlockCnt < colorCnt:
+                changeBlockGroup(nomalCnt,colorCnt,standard)
+                return group
+        elif nomalBlockCnt+colorBlockCnt < nomalCnt+colorCnt:
+            changeBlockGroup(nomalCnt,colorCnt,standard)
+            return group
+    return None
+
+# 블록 그룹 변경
+def changeBlockGroup(nomalCnt,colorCnt,standard):
+    global nomalBlockCnt, colorBlockCnt, standardBlock, blockGroup
+
+    nomalBlockCnt, colorBlockCnt = nomalCnt, colorCnt
+    standardBlock = standard
+
+# 블록 그룹 삭제 + 점수 얻기
+def removeBlock(blockGroup):
+    global result
+
+    for block in blockGroup:
+        board[block[0]][block[1]] = -2
+    result += (len(blockGroup)**2)
+
+# 중력 작용
+def worksGravity():
+    for j in range(n):
+        top = -1
+        for i in range(n-1,-1,-1):
+            if board[i][j] != -2:
+                if top != -1:
+                    if i!=top-1 and board[i][j] != -1:
+                        board[top-1][j] = board[i][j]
+                        board[i][j] = -2
+                        top = top-1
+                    else: top = i
+                else:
+                    if board[i][j] != -1:
+                        value = board[i][j]
+                        board[i][j] = -2
+                        board[n-1][j] = value
+                        top = n-1
+                    else:
+                        top = i
 
 # 반시계 방향으로 90도 회전
-def rotate270(board):
-    temp=[[0]*n for _ in range(n)]
+def rotate270():
+    newBoard = [[0]*n for _ in range(n)]
+
     for i in range(n):
         for j in range(n):
-            temp[n-1-j][i]=board[i][j]
-    return temp
+            newBoard[n-1-j][i] = board[i][j]
+    return newBoard
 
-n,m=map(int,input().split())
+n,m = map(int,input().split())
 board=[list(map(int,input().split())) for _ in range(n)]
-score=0
-
+result = 0
 while True:
-    visited = [[0] * n for _ in range(n)]
-    maxBlockGroup,x,y = [],-1,-1  # 삭제 할 블록 그룹, 기준 x, 기준 y
-    # 삭제 할 블록 그룹 찾기
+    nomalVisited = [[0] * n for _ in range(n)]  # 일반 블록 방문 체크 리스트
+    nomalBlockCnt,colorBlockCnt,standardBlock,blockGroup = 0,0,[],[]
+
+    # 가장 크기가 큰 블록 그룹 찾기
     for i in range(n):
         for j in range(n):
-            if not visited[i][j] and board[i][j]>-1:
-                visited[i][j]=1
-                blockGroup,sx,sy=grouping(i,j)
-                if blockGroup!=None:
-                    mbLen,bLen=len(maxBlockGroup),len(blockGroup)
-                    # 크기, max 기준 행, max 기준 열 순으로 블록 찾아서 갱신
-                    if mbLen<bLen or (mbLen==bLen and x<sx) or (mbLen==bLen and x==sx and y<sy):
-                        maxBlockGroup=copy.deepcopy(blockGroup)
-                        x,y=sx,sy
+            if board[i][j]>0 and not nomalVisited[i][j]:
+                nomalVisited[i][j]=1
+                group = findBolckGroup(i,j,board[i][j])
+                if group: blockGroup = group
 
-    if not maxBlockGroup: break
+    # 블록 삭제 + 점수 얻기
+    if blockGroup: removeBlock(blockGroup)
+    else: break
 
-    # 블록 그룹 삭제 + 점수 증가 => 삭제 된 블록은 -2로 갱신
-    deleteBolckGroup(maxBlockGroup)
-    # 검은 블록 제외, 모든 블록 아래로 이동
-    board=moveDown(board)
-    # 반시계 방향으로 90도 회전
-    board=rotate270(board)
-    # 검은 블록 제외, 모든 블록 아래로 이동
-    board=moveDown(board)
-
-print(score)
+    # 중력 작용
+    worksGravity()
+    # 반시계 방향 회전
+    board = rotate270()
+    # 중력 작용
+    worksGravity()
+print(result)
