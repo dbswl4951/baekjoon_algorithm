@@ -1,19 +1,21 @@
 import sys
+N=sys.stdin.readline().strip()
+arr=list(map(int,sys.stdin.readline().strip().split()))
+one={arr[0]:1}
+two={arr[0]*2:1}
+answer=0
+for n in arr[1:]:
+    print('n === ',n)
+    for i in one:
+        if n-i in two:
+            answer+=1
+            break
+    if n not in one:
+        one[n]=1
 
-if __name__ == '__main__':
-    N, M = map(int, sys.stdin.readline().split())
-    arr = [0] * N
-    value = 0
-    prefix_sum = [0]
-    for i in range(N):
-        arr[i] = int(input())
-        value += arr[i]
-        prefix_sum.append(value)
-    print("prefix_sum:",prefix_sum)
-    ans, tmp = 0, 0
-    for i in range(M - 1, N):
-        print("i:",i)
-        tmp = min(tmp, prefix_sum[i - (M - 1)])
-        ans = max(ans, prefix_sum[i + 1] - tmp)
-        print("tmp,ans:",tmp,ans)
-    print(ans)
+    for i in one:
+        if i+n not in two:
+            two[i+n]=1
+    print('one:',one)
+    print('two:',two)
+print(answer)
