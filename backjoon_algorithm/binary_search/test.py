@@ -1,58 +1,37 @@
 import sys
-input = sys.stdin.readline
+n, m = map(int, sys.stdin.readline().split())
+t_list = list(map(int, sys.stdin.readline().split()))
 
-def is_possible(target):
-    grpCnt = 1
-    total = 0
-    for number in numbers:
-        total += number
-        print('number, total : ',number,total)
-        if total > target:
-            grpCnt += 1
-            total = number
-            print('grpCnt:',grpCnt)
+if n < m:
+    print(n)
+else:
+    left, right = 0, 60000000000
+    t = None
 
-    return grpCnt <= M
+    while left <= right:
+        mid = (left + right) // 2
+        cnt = m
+        print('left, right, mid ===== ',left,right,mid)
+        for i in range(m):
+            cnt += mid // t_list[i]
+            print(mid // t_list[i])
+        print('cnt : ',cnt)
+        if cnt >= n:  # n명을 태울 수 있는 상황
+            t = mid
+            right = mid - 1
+        else:
+            left = mid + 1
 
-def solve(target):
-    count = 0
-    total = 0
-    result = []
-    m = M
-    for idx in range(N):
-        total += numbers[idx]
-        print('idx, total :',idx,total)
-        if total > target:
-            m -= 1
-            total = numbers[idx]
-            result.append(count)
-            count = 0
-            print('m, result : ',m,result)
-        count += 1
-        print('count:',count)
-        if N - idx == m:
+    # t - 1에 탑승한 아이들의 숫자를 계산한다.
+    cnt = m
+    for i in range(m):
+        cnt += (t - 1) // t_list[i]
+        print('cnt:',cnt)
+
+    # t에 탑승한 아이를 계산한다.
+    for i in range(m):
+        if t % t_list[i] == 0:  # t 시간에 탑승한 아이
+            cnt += 1
+        if cnt == n:
+            print(i + 1)
             break
-
-    while m:
-        result.append(count)
-        count = 1
-        m -= 1
-        print('result, count, m : ',result,count,m)
-    return result
-
-
-N, M = map(int, input().split())
-numbers = list(map(int, input().split()))
-left = 0
-right = sum(numbers)
-
-while left <= right:
-    mid = (left + right) // 2
-    print('left, right, mid : ',left,right,mid)
-    if is_possible(mid):
-        right = mid - 1
-    else:
-        left = mid + 1
-
-print(left)
-print(*solve(left))
