@@ -1,68 +1,44 @@
 import sys
-from queue import Queue
+from collections import deque
 
-
-
-
-def solution(x, n, love):
-    q = Queue()
-    q.put([x, love])
-
-    while not q.empty():
-        head = q.get()
-        headNode = head[0]
-        headLove = head[1]
-
-        visit[headNode] = x
-
-        for loveItem in headLove:
-            if not visit[loveItem]:
-                visit[loveItem] = x
-                temp = []
-
-                for i in range(1, n + 1):
-                    if arr[loveItem][i] == 0:
-                        temp.append(i)
-                if headLove != temp:
-                    return False
-                q.put([loveItem, temp])
-
-    return True
-
-
-if __name__ == "__main__":
-    cnt = 0
-    n = int(input())
-    arr = [[0 for col in range(n + 1)] for row in range(n + 1)]
-    visit = [0 for col in range(n+1)]
-    ans = []
-
-    for i in range(1, n + 1):
-        num = list(map(int, input().split()))
-        for j in range(0, len(num)):
-            arr[i][j + 1] = num[j]
-    print('arr :',arr)
-
-    for i in range(1, n + 1):
-        if visit[i] == 0:
-            love = []
-            for j in range(1, n + 1):
-                if arr[i][j] == 0:
-                    love.append(j)
-            print('love :',love)
-            if len(love) == 1:
-                print(0)
-                sys.exit()
-            check = solution(i, n, love)
-            if not check:
-                print(0)
-                sys.exit()
-            else:
-                ans.append(love)
-                cnt += 1
-
-    print(cnt)
-    for ansItem in ans:
-        for num in ansItem:
-            print(num, end=' ')
-        print()
+input = sys.stdin.readline
+n = int(input())
+connect = [[] for _ in range(n + 1)]  # 연결 정보
+needs = [[0] * (n + 1) for _ in range(n + 1)]  # 각 제품을 만들때 필요한 부품
+q = deque()  # 위상 정렬
+degree = [0] * (n + 1)  # 진입 차수
+for _ in range(int(input())):
+    a, b, c = map(int, input().split())
+    connect[b].append((a, c))
+    degree[a] += 1
+print('graph:',connect)
+print('degree:',degree)
+for i in range(1, n + 1):
+    # 진입 차수가 0인걸 넣어준다.
+    if degree[i] == 0:
+        q.append(i)
+# 위상 정렬 시작
+while q:
+    now = q.popleft()
+    print('now :',now)
+    # 현 제품의 다음 단계 번호, 현 제품이 얼마나 필요한지
+    for next, next_need in connect[now]:
+        print('next, next_need:',next, next_need)
+        # 만약 현 제품이 기본 부품이면
+        if needs[now].count(0) == n + 1:
+            needs[next][now] += next_need
+        # 현 제품이 중간 부품이면
+        else:
+            for i in range(1, n + 1):
+                needs[next][i] += needs[now][i] * next_need
+        # 차수 -1
+        degree[next] -= 1
+        if degree[next] == 0:
+            # 차수 0이면 큐에 넣음
+            q.append(next)
+        for ne in needs:print(ne)
+print('------')
+for x in enumerate(needs[n]):
+    print('x:',x)
+    if x[1] > 0:
+        print(*x)
