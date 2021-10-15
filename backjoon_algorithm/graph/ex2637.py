@@ -8,6 +8,7 @@ graph = [[] for _ in range(n+1)]
 needs = [[0]*(n+1) for _ in range(n+1)]
 indegree = [0]*(n+1)
 q = deque()
+
 for _ in range(m):
     a,b,c = map(int,sys.stdin.readline().split())
     graph[b].append([a,c])
