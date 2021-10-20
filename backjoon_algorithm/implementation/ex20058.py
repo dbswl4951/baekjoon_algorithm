@@ -27,8 +27,6 @@ def getRotatedBorad(level):
             for i in range(l):
                 for j in range(l):
                     board[i+x][j+y]=tempBoard[i][j]
-            #for b in board:
-            #    print(*b)
             y+=l
         x+=l
         y=0
