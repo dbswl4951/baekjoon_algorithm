@@ -1,41 +1,62 @@
-from collections import deque
-sx, sy = map(int, input().split())
-ex, ey = map(int, input().split())
-dist = [[-1]*9 for _ in range(10)]
-dx = [(-1, -2, -3), (-1, -2, -3), (0, -1, -2), (0, -1, -2),
-      (0, 1, 2), (0, 1, 2), (1, 2, 3), (1, 2, 3)]
-dy = [(0, -1, -2), (0, 1, 2), (-1, -2, -3), (1, 2, 3),
-      (-1, -2, -3), (1, 2, 3), (0, -1, -2), (0, 1, 2)]
+import sys
+from copy import deepcopy
 
-def move(i, x, y):
-    nx, ny = x, y
-    for j in range(3):
-        nx, ny = x+dx[i][j], y+dy[i][j]
-        if nx < 0 or nx >= 10 or ny < 0 or ny >= 9:
-            return -1, -1
-        if j < 2 and nx == ex and ny == ey:
-            return -1, -1
-    return nx, ny
+input = sys.stdin.readline
+dx = [-1, -1, 0, 1, 1, 1, 0, -1]
+dy = [0, -1, -1, -1, 0, 1, 1, 1]
 
-def bfs():
-    q = deque()
-    q.append((sx, sy))
-    dist[sx][sy] = 0
-    while q:
-        x, y = q.popleft()
-        print("x,y ===",x,y)
-        if x == ex and y == ey:
-            print('--------')
-            print(dist[x][y])
+def dfs(x, y, d, cnt):
+    global ans, a, fish
+    move_fish(x, y)
+    while True:
+        nx, ny = x + dx[d], y + dy[d]
+        if not 0 <= nx < 4 or not 0 <= ny < 4:
+            ans = max(ans, cnt)
             return
-        for i in range(8):
-            nx, ny = move(i, x, y)
-            if nx != -1 and dist[nx][ny] == -1:
-                print('nx,ny : ',nx,ny)
-                q.append((nx, ny))
-                dist[nx][ny] = dist[x][y]+1
-                print("q:",q)
-                for d in dist: print(d)
-    print(-1)
+        if not a[nx][ny]:
+            x, y = nx, ny
+            continue
 
-bfs()
+        temp_a, temp_fish = deepcopy(a), deepcopy(fish)
+        temp1, temp2 = fish[a[nx][ny][0]], a[nx][ny]
+        fish[a[nx][ny][0]], a[nx][ny] = [], []
+        dfs(nx, ny, temp2[1], cnt + temp2[0] + 1)
+        a, fish = temp_a, temp_fish
+        fish[a[nx][ny][0]], a[nx][ny] = temp1, temp2
+        x, y = nx, ny
+
+
+def move_fish(sx, sy):
+    for i in range(16):
+        if fish[i]:
+            x, y = fish[i][0], fish[i][1]
+            print('i,x,y : ',i,x,y)
+            for _ in range(9):
+                nx, ny = x + dx[a[x][y][1]], y + dy[a[x][y][1]]
+                if not 0 <= nx < 4 or not 0 <= ny < 4 or (nx == sx and ny == sy):
+                    a[x][y][1] = (a[x][y][1] + 1) % 8
+                    continue
+                print('nx,ny,d:',nx,ny,a[x][y][1])
+                if a[nx][ny]:
+                    fish[a[nx][ny][0]] = [x, y]
+                    print('f :',fish)
+                a[nx][ny], a[x][y] = a[x][y], a[nx][ny]
+                fish[i] = [nx, ny]
+                print('fish : ',fish)
+                break
+
+
+a = [[] for _ in range(4)]
+fish = [[] for _ in range(16)]
+for i in range(4):
+    temp = list(map(int, input().split()))
+    for j in range(0, 7, 2):
+        a[i].append([temp[j]-1, temp[j+1]-1])
+        fish[temp[j]-1] = [i, j // 2]
+print(a)
+print(fish)
+ans = 0
+d, cnt = a[0][0][1], a[0][0][0] + 1
+fish[a[0][0][0]], a[0][0] = [], []
+dfs(0, 0, d, cnt)
+print(ans)
